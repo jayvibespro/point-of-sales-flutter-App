@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1095166481018",
+    "project_id": "point-of-sales-flutter-app",
+    "storage_bucket": "point-of-sales-flutter-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095166481018:android:923f9068872171ed87a1c3",
+        "android_client_info": {
+          "package_name": "com.jaycode.pointofsales"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095166481018-i4edd9ejq8ps51gpvj1mu68094acgkko.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jaycode.pointofsales",
+            "certificate_hash": "aa391da630f88fc5e44d4fc3c914cf75c162c772"
+          }
+        },
+        {
+          "client_id": "1095166481018-ni783k1ugc9blot08seqlvq3l3cesvjs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6jdvP4lMc5-IDnXDErRMsFHhNc4s_Zb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095166481018-ni783k1ugc9blot08seqlvq3l3cesvjs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
