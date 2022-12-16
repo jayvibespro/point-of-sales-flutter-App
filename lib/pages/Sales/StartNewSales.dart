@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pointofsales/pages/Sales/AddSales.dart';
+import 'package:pointofsales/pages/Sales/ReadContacts.dart';
 
 class StartNewSales extends StatelessWidget {
   const StartNewSales({Key? key}) : super(key: key);
@@ -125,7 +126,13 @@ class StartNewSales extends StatelessWidget {
                   padding: const EdgeInsets.all(12.0),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(50),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ReadContacts(),
+                        ),
+                      );
+                    },
                     child: Container(
                       height: 50,
                       width: double.infinity,

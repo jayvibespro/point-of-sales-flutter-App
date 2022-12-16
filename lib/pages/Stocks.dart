@@ -27,7 +27,7 @@ class Stocks extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const CreateProduct(),
+                    builder: (context) => CreateProduct(),
                   ),
                 );
               },

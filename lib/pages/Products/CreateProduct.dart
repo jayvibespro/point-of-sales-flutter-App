@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../Services/ProductServices.dart';
+
 class CreateProduct extends StatelessWidget {
-  const CreateProduct({Key? key}) : super(key: key);
+  CreateProduct({Key? key}) : super(key: key);
+  final TextEditingController _productNameController = TextEditingController();
+  final TextEditingController _productBrandController = TextEditingController();
+  final TextEditingController _buyPriceController = TextEditingController();
+  final TextEditingController _sellPriceController = TextEditingController();
+  final TextEditingController _stockCountController = TextEditingController();
+  final DateTime _dateTime = DateTime.now();
+  final String _package = '';
+  final String _productImage = '';
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +124,7 @@ class CreateProduct extends StatelessWidget {
               right: 12,
             ),
             child: TextField(
+              controller: _productNameController,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 label: const Text("Name*"),
@@ -143,6 +154,7 @@ class CreateProduct extends StatelessWidget {
               right: 12,
             ),
             child: TextField(
+              controller: _productBrandController,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 label: const Text("Brand*"),
@@ -182,6 +194,7 @@ class CreateProduct extends StatelessWidget {
                       right: 12,
                     ),
                     child: TextField(
+                      controller: _buyPriceController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         label: const Text("Buying Price*"),
@@ -214,6 +227,7 @@ class CreateProduct extends StatelessWidget {
                       right: 0,
                     ),
                     child: TextField(
+                      controller: _sellPriceController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         label: const Text("Selling Price*"),
@@ -258,6 +272,7 @@ class CreateProduct extends StatelessWidget {
                       right: 12,
                     ),
                     child: TextField(
+                      controller: _stockCountController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         label: const Text("Stock*"),
@@ -291,6 +306,7 @@ class CreateProduct extends StatelessWidget {
                     ),
                     child: TextField(
                       keyboardType: TextInputType.datetime,
+                      readOnly: true,
                       decoration: InputDecoration(
                         label: const Text("Date"),
                         hintText: "Select date...",
@@ -376,7 +392,25 @@ class CreateProduct extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                var buyPrice = int.parse(_buyPriceController.text);
+                var sellPrice = int.tryParse(_sellPriceController.text);
+                var stockCount = int.parse(_stockCountController.text);
+
+                ProductService(
+                  id: '',
+                  productName: _productNameController.text,
+                  productBrand: _productBrandController.text,
+                  package: _package,
+                  productImage: _productImage,
+                  buyPrice: buyPrice,
+                  sellPrice: sellPrice!,
+                  stockCount: stockCount,
+                  time: _dateTime,
+                ).createProduct();
+
+                print('product created');
+              },
               child: const Text('Save & Publish'),
             ),
           ),

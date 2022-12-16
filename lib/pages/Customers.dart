@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:pointofsales/Services/CustomerServices.dart';
 
 import 'Sales/AddSales.dart';
+import 'Sales/ReadContacts.dart';
 
 class Customers extends StatelessWidget {
-  const Customers({Key? key}) : super(key: key);
+  Customers({Key? key}) : super(key: key);
+
+  final TextEditingController _customerNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +43,7 @@ class Customers extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: TextField(
+                    controller: _customerNameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.person_outline),
@@ -70,6 +76,7 @@ class Customers extends StatelessWidget {
                     right: 12,
                   ),
                   child: TextField(
+                    controller: _phoneNumberController,
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.call),
@@ -112,7 +119,15 @@ class Customers extends StatelessWidget {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          CustomerServices(
+                            id: '',
+                            customerName: _customerNameController.text,
+                            phoneNumber: _phoneNumberController.text,
+                            time: DateTime.now(),
+                          ).createCustomer();
+                          Navigator.pop(context);
+                        },
                         child: const Text('Save'),
                       ),
                     ],
@@ -126,7 +141,13 @@ class Customers extends StatelessWidget {
                   padding: const EdgeInsets.all(12.0),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(50),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ReadContacts(),
+                        ),
+                      );
+                    },
                     child: Container(
                       height: 50,
                       width: double.infinity,

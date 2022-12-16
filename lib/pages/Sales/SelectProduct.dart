@@ -245,7 +245,7 @@ class _SelectProductState extends State<SelectProduct> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const CreateProduct(),
+              builder: (context) => CreateProduct(),
             ),
           );
         },

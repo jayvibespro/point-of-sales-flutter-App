@@ -57,6 +57,7 @@ class AddSales extends StatelessWidget {
             ),
             child: TextField(
               keyboardType: TextInputType.datetime,
+              readOnly: true,
               decoration: InputDecoration(
                 label: const Text("Pick Date"),
                 hintText: "Pick Date",
@@ -136,7 +137,7 @@ class AddSales extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                       left: 12,
                       right: 12,
                       bottom: 16,
@@ -144,7 +145,7 @@ class AddSales extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.lightBlueAccent.withOpacity(0.3),
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
                       ),
@@ -152,16 +153,16 @@ class AddSales extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         Text("Items"),
                         Text("QNT"),
                         Text('Amount'),
                       ],
                     ),
                   ),
-                  Center(
+                  const Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: EdgeInsets.all(12.0),
                       child: Text(""
                           "No Item Selected."),
                     ),
@@ -189,7 +190,7 @@ class AddSales extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     'Save',
                   ),
                 ),

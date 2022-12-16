@@ -1,12 +1,25 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:pointofsales/pages/Customers.dart';
 import 'package:pointofsales/pages/Home.dart';
+import 'package:pointofsales/pages/Login.dart';
 import 'package:pointofsales/pages/Purchases.dart';
 import 'package:pointofsales/pages/Sales/Sales.dart';
 import 'package:pointofsales/pages/Sales/StartNewSales.dart';
 import 'package:pointofsales/pages/Settings.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,7 +28,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // Define the default brightness and colors.
@@ -65,26 +78,26 @@ class MyApp extends StatelessWidget {
         ),
       ),
       title: _title,
-      home: MyStatefulWidget(),
+      home: const Login(),
     );
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({super.key});
+class MyHome extends StatefulWidget {
+  const MyHome({super.key});
 
   @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+  State<MyHome> createState() => _MyHomeState();
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class _MyHomeState extends State<MyHome> {
   int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    Sales(),
-    Purchases(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Home(),
+    const Sales(),
+    const Purchases(),
     Customers(),
-    Settings(),
+    const Settings(),
   ];
 
   void _onItemTapped(int index) {
