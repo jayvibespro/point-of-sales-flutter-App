@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pointofsales/Services/CustomerServices.dart';
 
-import 'Sales/AddSales.dart';
+import '../Models/CustomersModel.dart';
 import 'Sales/ReadContacts.dart';
 
 class Customers extends StatelessWidget {
@@ -9,6 +10,23 @@ class Customers extends StatelessWidget {
 
   final TextEditingController _customerNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
+
+  Stream<List<CustomerModel>> customersStream() {
+    final _db = FirebaseFirestore.instance;
+
+    try {
+      return _db.collection("customers").snapshots().map((element) {
+        final List<CustomerModel> dataFromFireStore = <CustomerModel>[];
+        for (final DocumentSnapshot<Map<String, dynamic>> doc in element.docs) {
+          dataFromFireStore.add(CustomerModel.fromDocumentSnapshot(doc: doc));
+        }
+
+        return dataFromFireStore;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,8 +208,7 @@ class Customers extends StatelessWidget {
       );
     }
 
-    return ListView(
-      physics: const BouncingScrollPhysics(),
+    return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
@@ -228,7 +245,7 @@ class Customers extends StatelessWidget {
             right: 12,
           ),
           child: TextField(
-            keyboardType: TextInputType.phone,
+            keyboardType: TextInputType.text,
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               label: const Text("Search"),
@@ -249,20 +266,47 @@ class Customers extends StatelessWidget {
             ),
           ),
         ),
-        ListTile(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const AddSales(),
-              ),
-            );
-          },
-          leading: const CircleAvatar(
-            child: Icon(Icons.person_outline),
+        Expanded(
+          child: StreamBuilder<List<CustomerModel>>(
+            stream: customersStream(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasData) {
+                return ListView.builder(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      CustomerModel? customerSnapshot = snapshot.data![index];
+                      return ListTile(
+                        onTap: () {
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => AddSales(
+                          //       customerName: customerSnapshot.customerName,
+                          //     ),
+                          //   ),
+                          // );
+                        },
+                        leading: const CircleAvatar(
+                          child: Icon(Icons.person_outline),
+                        ),
+                        title: Text('${customerSnapshot.customerName}'),
+                        subtitle: Text('${customerSnapshot.phoneNumber}'),
+                        trailing: const Icon(Icons.chevron_right),
+                      );
+                    });
+              } else {
+                return const Center(
+                  child: Text('An error occurred...'),
+                );
+              }
+            },
           ),
-          title: const Text('James Bond'),
-          subtitle: const Text('jamesbond@gmail.com'),
-          trailing: const Icon(Icons.chevron_right),
         ),
       ],
     );
