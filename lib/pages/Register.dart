@@ -11,6 +11,17 @@ class Register extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 18.0),
+            child: Text(
+              "Register",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 50,
+                color: Colors.lightBlueAccent,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(
               top: 6.0,
@@ -140,7 +151,9 @@ class Register extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => const MyHome(),
+                    builder: (context) => MyHome(
+                      selectedIndex: 0,
+                    ),
                   ),
                 );
               },

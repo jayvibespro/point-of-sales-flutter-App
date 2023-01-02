@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointofsales/pages/Login.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -48,7 +49,14 @@ class _SettingsState extends State<Settings> {
         ),
         Divider(),
         ListTile(
-          onTap: () {},
+          onTap: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Login(),
+                ),
+                (route) => false);
+          },
           leading: Icon(Icons.logout_rounded),
           title: Text('Log Out'),
           subtitle: Text('johndue@gmail.com'),

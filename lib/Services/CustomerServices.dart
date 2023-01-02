@@ -39,7 +39,16 @@ class CustomerServices {
       await FirebaseFirestore.instance.collection('customers').doc(id).update({
         'customer_name': customerName,
         "phone_number": phoneNumber,
+        'timestamp': time,
       });
+      Get.snackbar("Message", "$customerName details successfully updated.",
+          snackPosition: SnackPosition.BOTTOM,
+          borderRadius: 20,
+          duration: const Duration(seconds: 4),
+          margin: const EdgeInsets.all(15),
+          isDismissible: true,
+          dismissDirection: DismissDirection.horizontal,
+          forwardAnimationCurve: Curves.easeInOutBack);
     } catch (e) {}
   }
 

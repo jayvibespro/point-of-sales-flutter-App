@@ -8,13 +8,16 @@ class ProductService {
   String productBrand;
   String productImage;
   String package;
+  String category;
   int buyPrice;
   int sellPrice;
   int stockCount;
-  DateTime time;
+
+  // DateTime time;
 
   ProductService({
     required this.id,
+    required this.category,
     required this.productName,
     required this.productBrand,
     required this.productImage,
@@ -22,7 +25,7 @@ class ProductService {
     required this.buyPrice,
     required this.sellPrice,
     required this.stockCount,
-    required this.time,
+    // required this.time,
   });
 
   createProduct() async {
@@ -31,11 +34,12 @@ class ProductService {
         'product_name': productName,
         'product_brand': productBrand,
         'package': package,
+        'category': category,
         'product_image': productImage,
         'buy_price': buyPrice,
         'sell_price': sellPrice,
         'stock_count': stockCount,
-        'timestamp': time,
+        // 'timestamp': time,
       });
       Get.snackbar("Message", "Product added successfully.",
           snackPosition: SnackPosition.BOTTOM,
@@ -54,11 +58,12 @@ class ProductService {
         'product_name': productName,
         'product_brand': productBrand,
         'package': package,
+        'category': category,
         'product_image': productImage,
         'buy_price': buyPrice,
         'sell_price': sellPrice,
         'stock_count': stockCount,
-        'timestamp': time,
+        // 'timestamp': time,
       });
     } catch (e) {}
   }

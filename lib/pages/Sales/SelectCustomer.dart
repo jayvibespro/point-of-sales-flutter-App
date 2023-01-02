@@ -1,19 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pointofsales/Services/CustomerServices.dart';
+import 'package:pointofsales/Models/CustomersModel.dart';
+import 'package:pointofsales/pages/Customers/ReadContacts.dart';
+import 'package:pointofsales/pages/Sales/SelectProduct.dart';
 
-import '../../Models/CustomersModel.dart';
-import 'ReadContacts.dart';
-import 'CustomerSales.dart';
+import '../../Models/ProductModel.dart';
+import '../../Services/CustomerServices.dart';
 
-class Customers extends StatefulWidget {
-  Customers({Key? key}) : super(key: key);
+class SelectCustomer extends StatefulWidget {
+  SelectCustomer({Key? key}) : super(key: key);
 
   @override
-  State<Customers> createState() => _CustomersState();
+  State<SelectCustomer> createState() => _SelectCustomerState();
 }
 
-class _CustomersState extends State<Customers> {
+class _SelectCustomerState extends State<SelectCustomer> {
   @override
   void initState() {
     // TODO: implement initState
@@ -69,9 +70,7 @@ class _CustomersState extends State<Customers> {
 
   @override
   Widget build(BuildContext context) {
-    createCustomerBottomSheet(BuildContext context) {
-      _customerNameController.clear();
-      _phoneNumberController.clear();
+    customBottomSheet(BuildContext context) {
       return showModalBottomSheet<void>(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -91,7 +90,7 @@ class _CustomersState extends State<Customers> {
                   padding: EdgeInsets.all(16.0),
                   child: Center(
                     child: Text(
-                      'Adding new Customer',
+                      'Add new Customer',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
@@ -251,230 +250,15 @@ class _CustomersState extends State<Customers> {
       );
     }
 
-    editCustomerBottomSheet(
-        BuildContext context, String id, String name, String phone) {
-      _customerNameController.text = name;
-      _phoneNumberController.text = phone;
-      return showModalBottomSheet<void>(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-              ),
-            ),
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text(
-                      'Edit Customer Info',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: TextField(
-                    controller: _customerNameController,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.person_outline),
-                      hintText: "Customer Name",
-                      label: const Text("Name"),
-                      focusedBorder: OutlineInputBorder(
-                        //<-- SEE HERE
-                        borderSide: const BorderSide(
-                            width: 1, color: Colors.blueAccent),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1, color: Colors.redAccent),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1, color: Colors.black54),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 6.0,
-                    bottom: 12,
-                    left: 12,
-                    right: 12,
-                  ),
-                  child: TextField(
-                    controller: _phoneNumberController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.call),
-                      hintText: "0694 059 968",
-                      label: const Text("Phone"),
-                      focusedBorder: OutlineInputBorder(
-                        //<-- SEE HERE
-                        borderSide: const BorderSide(
-                            width: 1, color: Colors.blueAccent),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1, color: Colors.redAccent),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1, color: Colors.black54),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: Colors.red,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          CustomerServices(
-                            id: id,
-                            customerName: _customerNameController.text,
-                            phoneNumber: _phoneNumberController.text,
-                            time: DateTime.now(),
-                          ).editCustomer();
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Edit'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    }
-
-    deleteCustomerBottomSheet(BuildContext context, String id) {
-      return showModalBottomSheet<void>(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        context: context,
-        builder: (BuildContext context) {
-          return Wrap(
-            children: [
-              Column(
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Text(
-                        'Warning',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Text(
-                        'You are about to delete this Customer from you collection. Do you want to proceed?',
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            'No',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            CustomerServices(
-                              id: id,
-                              customerName: '',
-                              phoneNumber: '',
-                              time: DateTime.now(),
-                            ).deleteCustomer();
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            'Delete',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white38,
-        centerTitle: true,
         title: const Text(
-          'Customers',
+          'Select a Customer',
           style: TextStyle(color: Colors.black87),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: ElevatedButton(
-              onPressed: () {
-                createCustomerBottomSheet(context);
-              },
-              child: const Text('New Customer'),
-            ),
-          ),
-        ],
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -538,6 +322,59 @@ class _CustomersState extends State<Customers> {
               ),
             ),
           ),
+          searchString != ''
+              ? SizedBox()
+              : ListTile(
+                  onTap: () async {
+                    List<ProductsTempModel> products = [];
+                    try {
+                      await FirebaseFirestore.instance
+                          .collection('products')
+                          .get()
+                          .then((value) {
+                        List<ProductModel> productList = [];
+                        for (final DocumentSnapshot<Map<String, dynamic>> doc
+                            in value.docs) {
+                          productList
+                              .add(ProductModel.fromDocumentSnapshot(doc: doc));
+                        }
+                        productList.forEach((element) {
+                          products.add(ProductsTempModel(
+                            value: false,
+                            id: element.id,
+                            productName: element.productName,
+                            productBrand: element.productBrand,
+                            productImage: element.productImage,
+                            package: element.package,
+                            price: element.sellPrice,
+                            itemCount: 0,
+                            stockCount: element.stockCount,
+                            category: element.category,
+                          ));
+                        });
+                        return products;
+                      });
+                    } catch (e) {
+                      rethrow;
+                    }
+
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => SelectProduct(
+                          customerName: 'Customer',
+                          customerId: '',
+                          productList: products,
+                        ),
+                      ),
+                    );
+                  },
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.person_outline),
+                  ),
+                  title: const Text('Customer'),
+                  subtitle: const Text('_ _ _ _ _ _ _ _ _ _'),
+                  trailing: const Icon(Icons.chevron_right),
+                ),
           Expanded(
             child: StreamBuilder<List<CustomerModel>>(
               stream: customersStream(),
@@ -554,68 +391,62 @@ class _CustomersState extends State<Customers> {
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         CustomerModel? customerSnapshot = snapshot.data![index];
-                        return Column(
-                          children: [
-                            ExpansionTile(
-                              title: Text('${customerSnapshot.customerName}'),
-                              leading: const CircleAvatar(
-                                child: Icon(Icons.person_outline),
+                        return ListTile(
+                          onTap: () async {
+                            showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (context) => const Center(
+                                    child: CircularProgressIndicator()));
+                            List<ProductsTempModel> products = [];
+                            try {
+                              await FirebaseFirestore.instance
+                                  .collection('products')
+                                  .get()
+                                  .then((value) {
+                                List<ProductModel> productList = [];
+                                for (final DocumentSnapshot<
+                                    Map<String, dynamic>> doc in value.docs) {
+                                  productList.add(
+                                      ProductModel.fromDocumentSnapshot(
+                                          doc: doc));
+                                }
+                                productList.forEach((element) {
+                                  products.add(ProductsTempModel(
+                                    value: false,
+                                    id: element.id,
+                                    productName: element.productName,
+                                    productBrand: element.productBrand,
+                                    productImage: element.productImage,
+                                    package: element.package,
+                                    price: element.sellPrice,
+                                    itemCount: 0,
+                                    stockCount: element.stockCount,
+                                    category: element.category,
+                                  ));
+                                });
+                                return products;
+                              });
+                            } catch (e) {
+                              rethrow;
+                            }
+
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => SelectProduct(
+                                  customerName: customerSnapshot.customerName,
+                                  customerId: customerSnapshot.id,
+                                  productList: products,
+                                ),
                               ),
-                              childrenPadding: EdgeInsets.only(left: 60),
-                              children: [
-                                ListTile(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => CustomerSales(
-                                          customerId: customerSnapshot.id,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  title:
-                                      Text('${customerSnapshot.customerName}'),
-                                  subtitle:
-                                      Text('${customerSnapshot.phoneNumber}'),
-                                  trailing: Icon(Icons.chevron_right),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          editCustomerBottomSheet(
-                                            context,
-                                            customerSnapshot.id,
-                                            customerSnapshot.customerName,
-                                            customerSnapshot.phoneNumber,
-                                          );
-                                        },
-                                        icon: const Icon(Icons.edit),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          deleteCustomerBottomSheet(
-                                            context,
-                                            customerSnapshot.id,
-                                          );
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                            );
+                          },
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.person_outline),
+                          ),
+                          title: Text('${customerSnapshot.customerName}'),
+                          subtitle: Text('${customerSnapshot.phoneNumber}'),
+                          trailing: const Icon(Icons.chevron_right),
                         );
                       });
                 } else {
@@ -627,6 +458,12 @@ class _CustomersState extends State<Customers> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          customBottomSheet(context);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

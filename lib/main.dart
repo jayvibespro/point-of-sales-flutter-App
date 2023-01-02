@@ -1,13 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:pointofsales/pages/Customers.dart';
+import 'package:pointofsales/pages/Customers/Customers.dart';
 import 'package:pointofsales/pages/Home.dart';
 import 'package:pointofsales/pages/Login.dart';
-import 'package:pointofsales/pages/Purchases.dart';
+import 'package:pointofsales/pages/Purchases/Purchases.dart';
 import 'package:pointofsales/pages/Sales/Sales.dart';
-import 'package:pointofsales/pages/Sales/StartNewSales.dart';
+import 'package:pointofsales/pages/Sales/SelectCustomer.dart';
 import 'package:pointofsales/pages/Settings.dart';
 
 void main() async {
@@ -84,14 +85,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHome extends StatefulWidget {
-  const MyHome({super.key});
-
+  MyHome({super.key, required this.selectedIndex});
+  int selectedIndex;
   @override
   State<MyHome> createState() => _MyHomeState();
 }
 
 class _MyHomeState extends State<MyHome> {
-  int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
     const Home(),
     const Sales(),
@@ -102,14 +102,14 @@ class _MyHomeState extends State<MyHome> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      widget.selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: _widgetOptions.elementAt(widget.selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -133,7 +133,7 @@ class _MyHomeState extends State<MyHome> {
             label: 'Settings',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: widget.selectedIndex,
         unselectedItemColor: Colors.black54,
         showUnselectedLabels: true,
         selectedItemColor: Colors.black87,
@@ -143,7 +143,7 @@ class _MyHomeState extends State<MyHome> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const StartNewSales(),
+              builder: (context) => SelectCustomer(),
             ),
           );
         },
@@ -151,4 +151,67 @@ class _MyHomeState extends State<MyHome> {
       ),
     );
   }
+}
+
+class FlutterContactsExample extends StatefulWidget {
+  @override
+  _FlutterContactsExampleState createState() => _FlutterContactsExampleState();
+}
+
+class _FlutterContactsExampleState extends State<FlutterContactsExample> {
+  List<Contact>? _contacts;
+  bool _permissionDenied = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContacts();
+  }
+
+  Future _fetchContacts() async {
+    if (!await FlutterContacts.requestPermission(readonly: true)) {
+      setState(() => _permissionDenied = true);
+    } else {
+      final contacts = await FlutterContacts.getContacts();
+      setState(() => _contacts = contacts);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+      home: Scaffold(
+          appBar: AppBar(title: Text('flutter_contacts_example')),
+          body: _body()));
+
+  Widget _body() {
+    if (_permissionDenied) return Center(child: Text('Permission denied'));
+    if (_contacts == null) return Center(child: CircularProgressIndicator());
+    return ListView.builder(
+        itemCount: _contacts!.length,
+        itemBuilder: (context, i) => ListTile(
+            title: Text(_contacts![i].displayName),
+            onTap: () async {
+              final fullContact =
+                  await FlutterContacts.getContact(_contacts![i].id);
+              await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => ContactPage(fullContact!)));
+            }));
+  }
+}
+
+class ContactPage extends StatelessWidget {
+  final Contact contact;
+  ContactPage(this.contact);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+      appBar: AppBar(title: Text(contact.displayName)),
+      body: Column(children: [
+        Text('First name: ${contact.name.first}'),
+        Text('Last name: ${contact.name.last}'),
+        Text(
+            'Phone number: ${contact.phones.isNotEmpty ? contact.phones.first.number : '(none)'}'),
+        Text(
+            'Email address: ${contact.emails.isNotEmpty ? contact.emails.first.address : '(none)'}'),
+      ]));
 }

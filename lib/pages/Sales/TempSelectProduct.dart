@@ -1,40 +1,80 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pointofsales/Models/ProductModel.dart';
-import 'package:pointofsales/pages/Sales/OrderSummary.dart';
+import 'package:intl/intl.dart';
 
+import '../../Models/ProductModel.dart';
 import '../Products/CreateProduct.dart';
 
-class SelectProduct extends StatefulWidget {
-  SelectProduct({
-    Key? key,
-    required this.customerName,
-    required this.customerId,
-    required this.productList,
-  }) : super(key: key);
-
-  List<ProductsTempModel> productList;
-  final String customerName;
-  final String customerId;
+class TempSelectProduct extends StatefulWidget {
+  const TempSelectProduct({Key? key}) : super(key: key);
 
   @override
-  State<SelectProduct> createState() => _SelectProductState();
+  State<TempSelectProduct> createState() => _TempSelectProductState();
 }
 
-class _SelectProductState extends State<SelectProduct> {
+class _TempSelectProductState extends State<TempSelectProduct> {
   @override
   void initState() {
     // TODO: implement initState
     _searchController.text = '';
-
-    items.addAll(widget.productList);
+    searchString = _searchController.text;
     super.initState();
   }
 
   final TextEditingController _searchController = TextEditingController();
 
   final TextEditingController _stockCountController = TextEditingController();
+
+  var numberFormatter = NumberFormat.decimalPattern("en_US");
+
+  String searchString = '';
+
+  Stream<List<ProductModel>> allProductsStream() {
+    final _db = FirebaseFirestore.instance;
+
+    if (searchString == '') {
+      try {
+        return _db
+            .collection('products')
+            .orderBy('product_name', descending: false)
+            .snapshots()
+            .map((element) {
+          final List<ProductModel> dataFromFireStore = <ProductModel>[];
+          for (final DocumentSnapshot<Map<String, dynamic>> doc
+              in element.docs) {
+            dataFromFireStore.add(ProductModel.fromDocumentSnapshot(doc: doc));
+          }
+          return dataFromFireStore;
+        });
+      } catch (e) {
+        rethrow;
+      }
+    } else {
+      try {
+        return _db
+            .collection('products')
+            .orderBy('product_name', descending: false)
+            .snapshots()
+            .map((element) {
+          final List<ProductModel> dataFromFireStore = <ProductModel>[];
+          for (final DocumentSnapshot<Map<String, dynamic>> doc
+              in element.docs) {
+            if (doc
+                .data()!['product_name']
+                .toLowerCase()
+                .contains(searchString.toLowerCase())) {
+              dataFromFireStore
+                  .add(ProductModel.fromDocumentSnapshot(doc: doc));
+            }
+          }
+          return dataFromFireStore;
+        });
+      } catch (e) {
+        rethrow;
+      }
+    }
+  }
 
   addProductBottomSheet(BuildContext context, String id) {
     _stockCountController.text = '';
@@ -167,7 +207,7 @@ class _SelectProductState extends State<SelectProduct> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
@@ -189,53 +229,15 @@ class _SelectProductState extends State<SelectProduct> {
     );
   }
 
-  List<ProductsTempModel> items = [];
-
-  void filterSearchResults(String query) {
-    List<ProductsTempModel> dummySearchList = [];
-    dummySearchList.addAll(widget.productList);
-    if (query != '') {
-      List<ProductsTempModel> dummyListData = [];
-      dummySearchList.forEach((item) {
-        if (item.productName!.toLowerCase().contains(query.toLowerCase())) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        widget.productList.clear();
-        widget.productList.addAll(dummyListData);
-      });
-      return;
-    } else {
-      setState(() {
-        widget.productList.clear();
-        widget.productList.addAll(items);
-      });
-      return;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white38,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'Select Product(s)',
-              style: TextStyle(color: Colors.black87),
-            ),
-            Text(
-              widget.customerName,
-              style: const TextStyle(
-                color: Colors.black54,
-                fontSize: 16,
-              ),
-            ),
-          ],
+        title: const Text(
+          'Select Product(s)',
+          style: TextStyle(color: Colors.black87),
         ),
         centerTitle: true,
         actions: [
@@ -251,7 +253,6 @@ class _SelectProductState extends State<SelectProduct> {
         ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.only(
@@ -263,7 +264,9 @@ class _SelectProductState extends State<SelectProduct> {
             child: TextField(
               controller: _searchController,
               onChanged: (value) {
-                filterSearchResults(value);
+                setState(() {
+                  searchString = value;
+                });
               },
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
@@ -288,74 +291,69 @@ class _SelectProductState extends State<SelectProduct> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                itemCount: widget.productList.length,
-                itemBuilder: (context, index) {
-                  ProductsTempModel? product = widget.productList[index];
-                  return CheckboxListTile(
-                    title: Row(
-                      children: [
-                        Text('${product.productName}'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            '(${product.stockCount})',
-                            style: const TextStyle(
-                                color: Colors.black54, fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    subtitle: Text('${product.price} Tsh'),
-                    value: product.value,
-                    onChanged: (newValue) {
-                      if (product.stockCount == 0) {
-                        addProductBottomSheet(context, product.id!);
-                      } else {
-                        setState(() {
-                          product.value = newValue;
-                        });
-                      }
-                    },
-                    controlAffinity: ListTileControlAffinity
-                        .leading, //  <-- leading Checkbox
+            child: StreamBuilder<List<ProductModel>>(
+              stream: allProductsStream(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                }),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: MaterialButton(
-              onPressed: () {
-                List<ProductsTempModel> newList = [];
-                int _totalItems = 0;
-                int _totalAmount = 0;
-
-                widget.productList.forEach((element) {
-                  if (element.value == true) {
-                    newList.add(element);
-                  } else {
-                    return;
-                  }
-                });
-
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => OrderSummary(
-                      productList: newList,
-                      customerName: widget.customerName,
-                      customerId: widget.customerId,
-                    ),
-                  ),
-                );
+                } else if (snapshot.hasData) {
+                  return ListView.builder(
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
+                      ),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        ProductModel? productSnapshot = snapshot.data![index];
+                        return ListTile(
+                          onTap: () {
+                            var product = {};
+                            product = {
+                              'value': true,
+                              'id': productSnapshot.id,
+                              'product_name': productSnapshot.productName,
+                              'product_brand': productSnapshot.productBrand,
+                              'product_image': productSnapshot.productImage,
+                              'package': productSnapshot.package,
+                              'price': productSnapshot.sellPrice,
+                              'item_count': 0,
+                              'stock_count': productSnapshot.stockCount,
+                              'category': productSnapshot.category,
+                            };
+                            Navigator.pop(context, product);
+                          },
+                          leading: productSnapshot.productImage! != ''
+                              ? CircleAvatar(
+                                  radius: 24,
+                                  child: ClipOval(
+                                    child: Image.network(
+                                      productSnapshot.productImage!,
+                                      fit: BoxFit.fill,
+                                      width: 50,
+                                    ),
+                                  ),
+                                )
+                              : const CircleAvatar(
+                                  radius: 24,
+                                  child: Center(
+                                    child:
+                                        Icon(Icons.production_quantity_limits),
+                                  ),
+                                ),
+                          title: Text('${productSnapshot.productName}'),
+                          subtitle: Text(
+                              '${numberFormatter.format(productSnapshot.stockCount)}'),
+                          trailing: Text(
+                              '${numberFormatter.format(productSnapshot.sellPrice)} Tsh'),
+                        );
+                      });
+                } else {
+                  return const Center(
+                    child: Text('An error occurred...'),
+                  );
+                }
               },
-              color: Colors.lightBlueAccent,
-              child: const Text(
-                'Next',
-                style: TextStyle(color: Colors.white),
-              ),
             ),
           ),
         ],

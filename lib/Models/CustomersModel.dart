@@ -4,13 +4,13 @@ class CustomerModel {
   String id;
   String customerName;
   String phoneNumber;
-  DateTime time;
+  // DateTime time;
 
   CustomerModel({
     required this.id,
     required this.customerName,
     required this.phoneNumber,
-    required this.time,
+    // required this.time,
   });
 
   factory CustomerModel.fromDocumentSnapshot(
@@ -19,7 +19,7 @@ class CustomerModel {
       id: doc.id,
       customerName: doc.data()!['customer_name'],
       phoneNumber: doc.data()!['phone_number'],
-      time: doc.data()!['timestamp'],
+      // time: doc.data()!['timestamp'],
     );
   }
 }

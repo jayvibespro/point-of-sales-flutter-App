@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pointofsales/main.dart';
 import 'package:pointofsales/pages/Register.dart';
 
@@ -13,6 +12,17 @@ class Login extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 18.0),
+            child: Text(
+              "Login",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 50,
+                color: Colors.lightBlueAccent,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(
               top: 6.0,
@@ -79,15 +89,11 @@ class Login extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(50),
               onTap: () {
-                Get.snackbar(
-                  'User 123',
-                  'Successfully created',
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 4),
-                );
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const MyHome(),
+                    builder: (context) => MyHome(
+                      selectedIndex: 0,
+                    ),
                   ),
                 );
               },
